@@ -9,7 +9,7 @@ This service handles the refresh and management of QuickBooks OAuth tokens. It w
 ## Features
 
 - OAuth token refresh for QuickBooks API
-- Token persistence in MySQL database
+- Token persistence in DynamoDB table
 - Scheduled token refresh (via cron job)
 - Error handling and logging
 
@@ -21,7 +21,7 @@ This service handles the refresh and management of QuickBooks OAuth tokens. It w
    ```
 
 2. Configure environment variables in `.env`:
-   - Database connection details
+   - DynamoDB connection details
    - QuickBooks OAuth credentials
    - Other configuration settings
 
@@ -50,7 +50,7 @@ Set up a cron job to run the token refresh every 45 minutes:
 
 ## Database Schema
 
-The service uses the `qbo_oauth_tokens` table with the following structure:
+The service uses a DynamoDB table (e.g., `qbo_oauth_tokens`) with the following structure:
 - `id` - Primary key
 - `account` - Account identifier
 - `access_token` - Current access token
@@ -60,6 +60,6 @@ The service uses the `qbo_oauth_tokens` table with the following structure:
 ## Dependencies
 
 - `intuit-oauth` - QuickBooks OAuth client
-- `mysql2` - MySQL database driver
+- `aws-sdk` - AWS SDK for DynamoDB
 - `dotenv` - Environment variable management
 - `moment` - Date/time utilities 
