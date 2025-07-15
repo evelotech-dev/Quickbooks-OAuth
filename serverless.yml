@@ -1,0 +1,59 @@
+service: qbo-auth
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${env:REGION}
+  stage: ${opt:stage, 'dev'}
+  environment:
+    AWS_DYNAMODB_TABLE: ${env:AWS_DYNAMODB_TABLE}
+    AWS_ROLE: ${env:AWS_ROLE}
+    # Add other AWS_* env vars as needed
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:${env:REGION}:*:table/${env:AWS_DYNAMODB_TABLE}
+    # Placeholder for SES permissions
+    # - Effect: Allow
+    #   Action:
+    #     - ses:SendEmail
+    #   Resource: '*'
+
+functions:
+  qboAuthHandler:
+    handler: dist/index.handler
+    events:
+      - schedule:
+          rate: rate(45 minutes)
+      - http:
+          path: /
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    QboAuthTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:AWS_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: account
+            AttributeType: S
+          - AttributeName: datetime
+            AttributeType: S
+        KeySchema:
+          - AttributeName: account
+            KeyType: HASH
+          - AttributeName: datetime
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST 
+
+plugins:
+- serverless-dotenv-plugin
