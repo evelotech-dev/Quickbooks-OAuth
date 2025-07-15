@@ -32,34 +32,18 @@ This service handles the refresh and management of QuickBooks OAuth tokens. It w
 
 ## Usage
 
+### Initial Token Seeding
+
+Before the service can begin managing and refreshing tokens, you must obtain fresh QuickBooks OAuth tokens and seed them into the DynamoDB table. This is required to initialize persistence and allow the service to perform token refresh operations.
+
+You can use the provided script to seed the initial tokens:
+```bash
+npm run seed
+```
+
+Ensure you have valid access and refresh tokens from the QuickBooks OAuth flow before running the script.
+
 ### Manual Token Refresh
 ```bash
 npm start
 ```
-
-### Development Mode
-```bash
-npm run dev
-```
-
-### Scheduled Token Refresh
-Set up a cron job to run the token refresh every 45 minutes:
-```bash
-*/45 * * * * cd /path/to/qbo-auth && npm start
-```
-
-## Database Schema
-
-The service uses a DynamoDB table (e.g., `qbo_oauth_tokens`) with the following structure:
-- `id` - Primary key
-- `account` - Account identifier
-- `access_token` - Current access token
-- `refresh_token` - Current refresh token
-- `updated_on` - Last update timestamp
-
-## Dependencies
-
-- `intuit-oauth` - QuickBooks OAuth client
-- `aws-sdk` - AWS SDK for DynamoDB
-- `dotenv` - Environment variable management
-- `moment` - Date/time utilities 
